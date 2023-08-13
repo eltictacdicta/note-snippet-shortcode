@@ -1,8 +1,8 @@
 <?php
 // phpcs:disable PSR1.Files.SideEffects
 /**
- * Plugin Name:     Note With Link Shortcode by Misterdigital
- * Plugin URI:      https://github.com/pvtl/wp-note-shortcode.git
+ * Plugin Name:     Note Snippet Shortcode by Misterdigital
+ * Plugin URI:      https://github.com/eltictacdicta/note-snippet-shortcode.git
  * Description:     Adds a Note Shortcode & popup (with options for the button) to the WYSIWYG
  * Author:          Misterdigital 
  * Author URI:      http://misterdigital.es
@@ -10,18 +10,18 @@
  * Domain Path:     /languages
  * Version:         0.1
  *
- * @package         NoteShortcode
+ * @package         NoteShortcodeSnippet
  */
 
 
 
-class NoteShortcode
+class NoteShortcodeSnippet
 {
     public function __construct()
     {
         // Call the actions/hooks
-        add_action('after_setup_theme', array($this, 'afterSetupTheme'));
-        add_action('init', array($this, 'registerNoteShortcode'));
+        add_action('after_setup_theme', array($this, 'afterSetupThemeSnippet'));
+        add_action('init', array($this, 'registerNoteShortcodeSnippet'));
     }
 
     /**
@@ -29,7 +29,7 @@ class NoteShortcode
      *
      * @return void
      */
-    public function afterSetupTheme()
+    public function afterSetupThemeSnippet()
     {
         add_action('init', function () {
             // Only execute script when user has access rights
@@ -44,17 +44,19 @@ class NoteShortcode
 
             // Add the JS to the admin screen
             add_filter('mce_external_plugins', function ($plugin_array) {
-                $file = plugin_dir_url(__FILE__) . '/resources/assets/js/shortcode-note-with-link.js';
-                $plugin_array['button-shortcode'] = $file;
+                $file = plugin_dir_url(__FILE__) . '/resources/assets/js/shortcode-note-snippet.js';
+                $plugin_array['button-shortcode-snippet'] = $file;
                 return $plugin_array;
             });
 
-            // Register the Note to the editor
-            add_filter('mce_buttons', function ($buttons) {
-                array_push($buttons, 'button-shortcode');
-                return $buttons;
+            
+
+            add_filter('mce_buttons', 'add_custom_button', 10, 2);
+                function add_custom_button($mce_buttons, $editor_id) {
+                    array_push($mce_buttons, 'button-shortcode-snippet');
+                    return $mce_buttons;
+                }
             });
-        });
     }
 
     /**
@@ -62,29 +64,29 @@ class NoteShortcode
      *
      * @return void
      */
-    public function registerNoteShortcode()
+    public function registerNoteShortcodeSnippet()
     {
         add_shortcode('button', function ($input) {
             if (!is_admin()) {
                 $attr = array(
-                    'texto' => 'También te puede interesar:',
+                    'pregunta' => '',
+                    'respuesta' => '',
                     'url' => '#',
-                    'size' => '',
-                    'style' => '',
+                    //'style' => '',
                     //'target' => '',
                     'class' => 'button',
                 );
 
-                if (!empty($input['texto'])) {
-                    $attr['text'] = $input['text'];
+                if (!empty($input['pregunta'])) {
+                    $attr['pregunta'] = $input['pregunta'];
                 }
 
                 if (!empty($input['url'])) {
-                    $attr['href'] = $input['href'];
+                    $attr['url'] = $input['url'];
                 }
 
-                if (!empty($input['anchor'])) {
-                    $attr['anchor'] = $input['anchor'];
+                if (!empty($input['respuesta'])) {
+                    $attr['respuesta'] = $input['respuesta'];
                 }
 
                 
@@ -113,46 +115,47 @@ if (!defined('ABSPATH')) {
     exit;  // Exit if accessed directly
 }
 
-$mdNoteShortcode = new NoteShortcode();
+$mdNoteShortcodeSnippet = new NoteShortcodeSnippet();
 
 
 add_action( 'wp_head', function () { 
-    echo '
+    echo "
     <style>    
-        .nota-cta a{     
-            color:white;        
-            border-bottom: medium solid #16C60C;
-            line-height: 150%;
-    
-        }
-    
-        .nota-cta a:hover{
-            text-decoration:none;
-        }
-        .nota-cta a:link{
-            text-decoration:none;
-        }
-        
-        .nota-cta{
-            border-style:none;
-        }
-    
-        
-    </style>';
-     } );
-    
-    function mostrar_nota_personalizada($atts){
-        $p = shortcode_atts( array (
-            'url' => '',
-            'texto' => ' Tambien te puede interesar:',
-            'anchor'=> ''
-          ), $atts );
-    
-        $texto = '<div class="nota-cta"><div class="su-note-inner su-u-clearfix su-u-trim" style="background-color:#2a5c84;color:#ffffff; text-align:center; padding: 15px; margin-bottom: 15px; ">✅'.$p['texto'].'<strong> <a href="'.$p['url'].'" sytle="text-decoration:none; outline: none;" >'.$p['anchor'].'</a></strong></div></div>';
-    
-    
-    
-        return $texto;
+    .nota-snippet{     
+        font-size:18px;   
+        border: medium solid #999;
+        line-height: 150%;
+        background-color:#EDEDED;
+        border-radius: 10px;
+        margin:15px;
+        padding:10px;
     }
-    
-    add_shortcode('nota_personalizada', 'mostrar_nota_personalizada');
+
+
+
+    </style>
+"; } );
+
+function mostrar_nota_snippet($atts){
+    $p = shortcode_atts( array (
+        'pregunta' => '',
+        'respuesta' => '',
+        'url' => ''
+      ), $atts );
+    $texto = '<div class="nota-snippet"><b style="line-height: 200%;">'.$p['pregunta'].':</b>
+            <br/><p>'.$p['respuesta'].'</p></div>
+            <script type="application/ld+json">
+            {
+                  "@context": "https://schema.org/",
+                  "@type": "DefinedTerm",
+                  "name":  "'.$p['pregunta'].'",
+                  "description": "'.$p['respuesta'].'",
+                  "url": "'.$p['url'].'"
+            }
+            </script>
+            ';
+
+    return $texto;
+}
+
+add_shortcode('nota_snippet', 'mostrar_nota_snippet');

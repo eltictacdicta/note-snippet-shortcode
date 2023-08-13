@@ -1,11 +1,11 @@
 (function() {
-    tinymce.PluginManager.add('button-shortcode', function( editor, url ) {
-        editor.addButton( 'button-shortcode', {
-            text: ' Note with link',
+    tinymce.PluginManager.add('button-shortcode-snippet', function( editor, url ) {
+        editor.addButton( 'button-shortcode-snippet', {
+            text: ' Note snippet',
             icon: 'mce-ico mce-i-pluscircle',
             onclick: function() {
                 editor.windowManager.open( {
-                    title: 'Add Note',
+                    title: 'Add Note Snippet',
                     body: [
                         /*{
                             type: 'listbox',
@@ -22,28 +22,28 @@
                         
                         {
                             type: 'textbox',
-                            label: 'Text from before',
-                            name: 'texto',
+                            label: 'Question',
+                            name: 'pregunta',
                             // tooltip: 'Some nice tooltip to use',
-                            value: ' También te puede interesar:'
+                            value: ''
+                        },
+                        {
+                            type: 'textbox',
+                            label: 'Response',
+                            name: 'respuesta',
+                            // tooltip: 'Some nice tooltip to use',
+                            value: ''
                         },
                         {
                             type: 'textbox',
                             label: 'Link (URL)',
                             name: 'url',
                             //tooltip: 'If linking to another page, please use a relative URL - eg. /about not http://google.com/about',
-                            value: 'https://domain.com/about-us'
-                        },
-                        {
-                            type: 'textbox',
-                            label: 'Anchor',
-                            name: 'anchor',
-                            // tooltip: 'Some nice tooltip to use',
-                            value: 'Learn More'
+                            value: ''
                         }
                     ],
                     onsubmit: function( e ) {
-                        editor.insertContent( '[nota_personalizada url="' + e.data.url + '" texto="' + e.data.texto + '" anchor="' + e.data.anchor + '"]');
+                        editor.insertContent( '[nota_snippet url="' + e.data.url + '" pregunta="' + e.data.pregunta + '" respuesta="' + e.data.respuesta + '"]');
                     }
                 });
             },
