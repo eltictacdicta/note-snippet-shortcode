@@ -44,7 +44,7 @@ class NoteShortcodeSnippet
 
             // Add the JS to the admin screen
             add_filter('mce_external_plugins', function ($plugin_array) {
-                $file = plugin_dir_url(__FILE__) . '/resources/assets/js/shortcode-note-snippet.js';
+                $file = plugin_dir_url(__FILE__) . '/resources/assets/js/shortcode-note-snippet.js?01';
                 $plugin_array['button-shortcode-snippet'] = $file;
                 return $plugin_array;
             });
